@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
-
-	"github.com/hashicorp/go-getter"
 )
 
 func main() {
@@ -18,14 +18,13 @@ func main() {
 		log.Fatal("No mp4 Files, for this episode found: ", err)
 	}
 
-	req, err := http.NewRequest("GET", "https://maxfinishseveral.com/e/m63gnnnjygor", nil)
+	req, err := http.NewRequest("GET", "https://maxfinishseveral.com/e/kotd0uw6kf4l", nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return
 	}
 
-	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0")
 
 	client := &http.Client{}
 
@@ -39,20 +38,35 @@ func main() {
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("Error reading response:", err)
-		return
 	}
 
 	submatch := re.FindStringSubmatch(string(body))
 
 	decoded, err := base64.StdEncoding.DecodeString(submatch[1])
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	err2 := getter.Get("./file.mp4", string(decoded))
-	if err2 != nil {
-		fmt.Println("Error downloading File: ", err2)
+	out, err := os.Create("./file.mp4")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	fmt.Println(string(decoded))
+	downResp, err := http.Get(string(decoded))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err3 := io.Copy(out, downResp.Body)
+	if err3 != nil {
+		log.Fatal(err3)
+	}
+
+	/*
+	   err2 := getter.Get("./file.mp4", submatch[1])
+
+	   	if err2 != nil {
+	   		fmt.Println(err2)
+	   	}
+	*/
 }
