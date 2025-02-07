@@ -11,14 +11,14 @@ import (
 	"regexp"
 )
 
-func VoeDownload() {
+func VoeDownload(URL string) {
 
 	re, err := regexp.Compile("'mp4':\\s*'([^']+)'")
 	if err != nil {
 		log.Fatal("No mp4 Files, for this episode found: ", err)
 	}
 
-	req, err := http.NewRequest("GET", "https://maxfinishseveral.com/e/kotd0uw6kf4l", nil)
+	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
 		return
