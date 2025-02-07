@@ -1,5 +1,7 @@
 package main
 
+import "joshfah.com/scraper/httpreq"
+
 func main() {
-	voeDownload()
+	httpreq.VoeDownload()
 }

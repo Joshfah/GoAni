@@ -1,4 +1,4 @@
-package main
+package httpreq
 
 import (
 	"encoding/base64"
@@ -11,7 +11,7 @@ import (
 	"regexp"
 )
 
-func voeDownload() {
+func VoeDownload() {
 
 	re, err := regexp.Compile("'mp4':\\s*'([^']+)'")
 	if err != nil {
