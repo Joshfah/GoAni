@@ -11,55 +11,56 @@ import (
 	"regexp"
 )
 
-func VoeDownload(URL string) {
+func VoeDownload(URLs []string) {
+	for n := range URLs {
+		re, err := regexp.Compile("'mp4':\\s*'([^']+)'")
+		if err != nil {
+			log.Fatal("No mp4 Files, for this episode found: ", err)
+		}
 
-	re, err := regexp.Compile("'mp4':\\s*'([^']+)'")
-	if err != nil {
-		log.Fatal("No mp4 Files, for this episode found: ", err)
-	}
+		req, err := http.NewRequest("GET", URLs[n], nil)
+		if err != nil {
+			fmt.Println("Error creating request:", err)
+			return
+		}
 
-	req, err := http.NewRequest("GET", URL, nil)
-	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
-	}
+		req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0")
 
-	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0")
+		client := &http.Client{}
 
-	client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Println("Error making request:", err)
+			return
+		}
+		defer resp.Body.Close()
 
-	resp, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error making request:", err)
-		return
-	}
-	defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("Error reading response:", err)
+		}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading response:", err)
-	}
+		submatch := re.FindStringSubmatch(string(body))
 
-	submatch := re.FindStringSubmatch(string(body))
+		decoded, err := base64.StdEncoding.DecodeString(submatch[1])
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	decoded, err := base64.StdEncoding.DecodeString(submatch[1])
-	if err != nil {
-		log.Fatal(err)
-	}
+		out, err := os.Create("./file.mp4")
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	out, err := os.Create("./file.mp4")
-	if err != nil {
-		log.Fatal(err)
-	}
+		downResp, err := http.Get(string(decoded))
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	downResp, err := http.Get(string(decoded))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	_, err3 := io.Copy(out, downResp.Body)
-	if err3 != nil {
-		log.Fatal(err3)
+		_, err3 := io.Copy(out, downResp.Body)
+		if err3 != nil {
+			log.Fatal(err3)
+		}
 	}
 
 }
