@@ -1,4 +1,4 @@
-package filecreation
+package FileCreation
 
 import (
 	"fmt"
