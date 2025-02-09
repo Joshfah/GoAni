@@ -7,6 +7,7 @@ import (
 	"cogentcore.org/core/events"
 	"cogentcore.org/core/styles"
 	"cogentcore.org/core/styles/units"
+	"joshfah.com/scraper/httpreq"
 	"joshfah.com/scraper/scraping"
 )
 
@@ -25,6 +26,7 @@ func Gui() {
 		URLs := scraping.ScrapeForSeasons(URLText.Text())
 		seasons := scraping.ScrapeForEpisodes(URLs)
 		redirects := scraping.ScrapeForURLs(seasons)
+		httpreq.VoeDownload(redirects[1])
 		SeasonsAndEpisodesFrame := core.NewFrame(body)
 		fmt.Println(seasons)
 		fmt.Println(redirects)

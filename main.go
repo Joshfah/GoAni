@@ -1,11 +1,16 @@
 package main
 
 import (
-	"joshfah.com/scraper/gui"
-	_ "joshfah.com/scraper/gui"
-	_ "joshfah.com/scraper/httpreq"
+	"joshfah.com/scraper/httpreq"
 )
 
 func main() {
-	gui.Gui()
+	/*seasonURLs := scraping.ScrapeForSeasons("https://aniworld.to/anime/stream/solo-leveling")
+	seasons := scraping.ScrapeForEpisodes(seasonURLs)
+	redURLs := scraping.ScrapeForURLs(seasons)
+
+	fmt.Println(redURLs) */
+
+	red := httpreq.GetVoeRedirect("https://aniworld.to/redirect/3192028")
+	httpreq.Getm3u8(red)
 }
