@@ -36,8 +36,6 @@ func GetVoeRedirect(URL string) (redURL string) {
 
 	submatch := re.FindStringSubmatch(string(body))
 
-	fmt.Println(string(submatch[0]))
-
 	return string(submatch[0])
 
 	/*
