@@ -19,13 +19,14 @@ type Season struct {
 	IsMovie  bool
 }
 
-func ScrapeForEpisodes(URLs []string) (s []Season /*, e []Episode*/) {
+func ScrapeForEpisodes(URLs []string) (s []Season) {
 	var seasons []Season
 	//	var episodes []Episode
 
 	for n := range URLs {
 		c := colly.NewCollector()
 		episode := Episode{}
+		season := Season{}
 
 		c.OnRequest(func(r *colly.Request) {
 			fmt.Println("Visiting: ", r.URL)
@@ -33,7 +34,6 @@ func ScrapeForEpisodes(URLs []string) (s []Season /*, e []Episode*/) {
 
 		c.OnHTML("td.seasonEpisodeTitle", func(e *colly.HTMLElement) {
 			link := e.ChildAttr("a", "href")
-			season := Season{}
 			URL := "https://aniworld.to" + link
 			episode.URL = URL
 			season.IsMovie = true
@@ -44,7 +44,6 @@ func ScrapeForEpisodes(URLs []string) (s []Season /*, e []Episode*/) {
 				}
 			}
 			season.Count = n + 1
-			season.Episodes = append(season.Episodes, episode)
 			seasons = append(seasons, season)
 		})
 
@@ -54,6 +53,7 @@ func ScrapeForEpisodes(URLs []string) (s []Season /*, e []Episode*/) {
 				episode.Name = episodeName
 			}
 		})
+		season.Episodes = append(season.Episodes, episode)
 
 		c.Visit(URLs[n])
 	}
