@@ -1,6 +1,7 @@
 package gui
 
 import (
+	"fmt"
 	"strconv"
 
 	"cogentcore.org/core/core"
@@ -37,6 +38,7 @@ func Gui() {
 	SearchButton.OnClick(func(e events.Event) {
 		URLs := scraping.ScrapeForSeasons(URLText.Text())
 		seasons := scraping.ScrapeForEpisodes(URLs)
+		fmt.Println(seasons)
 		//redirects := scraping.ScrapeForURLs(seasons)
 		var allSwitches []*core.Switch
 		body.Update()
@@ -88,8 +90,6 @@ func Gui() {
 					s.Grow.Set(1, 1)
 				})
 
-				allSwitches = append(allSwitches, seasonsSwitch)
-
 				seasonsSwitch.OnChange(func(e events.Event) {
 					for _, eps := range seasonEpisodeSwitches[seasons[n].Count] {
 						if seasonsSwitch.IsChecked() {
@@ -101,6 +101,13 @@ func Gui() {
 					EpisodesFrame.Update()
 				})
 			}
+
+			for n := range allSwitches {
+				if allSwitches[n] == episodeSwitch {
+					allSwitches[n].SetText("Episode " + strconv.Itoa(n+1))
+				}
+			}
+
 			prevNum = seasons[n].Count
 
 			masterSwitch.OnChange(func(e events.Event) {
@@ -120,13 +127,13 @@ func Gui() {
 		downButton.Styler(func(s *styles.Style) {
 			s.Justify.Content = styles.End
 		})
-		downButton.OnChange(func(e events.Event) {
+		downButton.OnClick(func(e events.Event) {
 			for n := range allSwitches {
 				if allSwitches[n].IsChecked() {
 					turnedOnSwitches = append(turnedOnSwitches, allSwitches[n])
+					fmt.Println(URLs[n])
 				}
 			}
-
 		})
 
 	})

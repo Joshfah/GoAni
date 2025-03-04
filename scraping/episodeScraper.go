@@ -44,7 +44,6 @@ func ScrapeForEpisodes(URLs []string) (s []Season) {
 				}
 			}
 			season.Count = n + 1
-			seasons = append(seasons, season)
 		})
 
 		c.OnHTML("a", func(t *colly.HTMLElement) {
@@ -54,6 +53,7 @@ func ScrapeForEpisodes(URLs []string) (s []Season) {
 			}
 		})
 		season.Episodes = append(season.Episodes, episode)
+		seasons = append(seasons, season)
 
 		c.Visit(URLs[n])
 	}
